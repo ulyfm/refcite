@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RefCite - Cite Sources!</title>
+	<style type="text/css">
+		body {
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+		}
+		#bigbox {
+			width: 60%;
+			height: 40px;
+			min-width: 200px;
+			max-width: 2000px;
+			padding: 6px;
+			box-sizing: border-box;
+			font-size: 15pt;
+			border: 2px black solid;
+			border-radius: 5px;
+		}
+		input[type=submit] {
+			border-radius: 5px;
+			border: 2px black solid;
+			height: 40px;
+			font-size: 15pt;
+		}
+		input[type=submit]:active {
+			background-color: white; 
+			color: black;
+		}
+		input[type=submit]:hover {
+			background-color: #ecf0f1;
+		}
+		hr {
+			width: 60%;
+		}
+		#searchdiv {
+			display: none;
+		}
+		#citations {
+			display: none;
+		}
+	</style>
+	<script type="text/javascript">
+		function cite(){
+
+			var query = document.getElementById("bigbox").value;
+
+			//DOI Input
+			if(query.toLowerCase().startsWith("")){
+				var request = createCORSRequest("get", "https://api.unpaywall.org/v2/" + query + "?email=" + Math.random().toString(36).substring(7));
+				if (request){
+    				request.onload = function() {
+    					var text = JSON.parse(request.responseText);
+    					if(text.HTTP_status_code != "404"){
+    						alert(request.responseText);
+    					}
+    				};
+    				request.send();
+				}
+			}
+
+			return false;
+		}
+		function createCORSRequest(method, url){
+    		var xhr = new XMLHttpRequest();
+    		if ("withCredentials" in xhr){
+    		    xhr.open(method, url, true);
+    		} else if (typeof XDomainRequest != "undefined"){
+    		    xhr = new XDomainRequest();
+    		    xhr.open(method, url);
+    		} else {
+    		    xhr = null;
+    		}
+    		return xhr;
+		}
+	</script>
+</head>
+<body>
+	<h1>RefCite Citation Generator</h1>
+	<h2>Create a Citation:</h2>
+	<form name="search" onsubmit="return cite()">
+		<input type="text" name="bigbox" id="bigbox" placeholder="Enter DOI, Link, Title, etc...">
+		<input type="submit" value="Search">
+	</form>
+	<h2 id="dots"></h2>
+	<div id="searchdiv">
+		<hr align="left"/>
+		<div id="searchresults">
+			
+		</div>
+		<input type="submit" value="Cancel">
+	</div>
+	<hr align="left"/>
+	<div id="citations">
+		<h2>Your Citations:</h2>
+		<div id="savedcitations">
+			
+		</div>
+		<input type="submit" value="Clear Citations">
+	</div>
+</body>
+</html>

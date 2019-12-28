@@ -112,18 +112,6 @@ select option {
 		input[name=ChicagoA]:hover {
 			background-color: #EE5A24;
 		}
-		input[name=ChicagoB] {
-			background-color: #006266;
-		}
-		input[name=ChicagoB]:hover {
-			background-color: #009432;
-		}
-		input[name=IEEE] {
-			background-color: #F79F1F;
-		}
-		input[name=IEEE]:hover {
-			background-color: #FFC312;
-		}
 		hr {
 			width: 60%;
 		}
@@ -145,6 +133,10 @@ select option {
 			text-decoration: inherit;
 		}
 		#vtitl, #vurl{ width: 50%; }
+
+		#savedcitations {
+			font-family: "Times New Roman", Times, serif;
+		}
 	</style>
 	<script type="text/javascript">
 		function cite(){
@@ -351,13 +343,9 @@ select option {
 			if(format == "MLA"){
 				document.getElementById("savedcitations").innerHTML = generateMLA();
 			}else if(format == "APA"){
-				document.getElementById("savedcitations").innerHTML = JSON.stringify(citations);//todo
+				document.getElementById("savedcitations").innerHTML = generateAPA();
 			}else if(format == "ChicagoA"){
-				document.getElementById("savedcitations").innerHTML = JSON.stringify(citations);
-			}else if(format == "ChicagoB"){
-				document.getElementById("savedcitations").innerHTML = JSON.stringify(citations);
-			}else if(format == "IEEE"){
-				document.getElementById("savedcitations").innerHTML = JSON.stringify(citations);
+				document.getElementById("savedcitations").innerHTML = generateChicago();
 			}
 			document.getElementById("citations").style.display = "initial";
 		}
@@ -446,7 +434,6 @@ select option {
 			});
 			for(var g = 0; g < version.length; ++g){
 				str += version[g];
-				str += "<br><br>";
 			}
 			return str;
 		}
@@ -528,7 +515,7 @@ select option {
 			for(var a = 0; a < citations.length; ++a){
 				var cit = citations[a];
 				
-				var fin = authorText(cit);
+				var fin = "<p>" + authorText(cit);
 				if(cit.genre == 'journal-article'){
 					fin += "\"" + cit.title + ".\"" + " <i>" + cit.journal_name + "</i>, vol. " + cit.volume + ", no. " + cit.issue + ", " + cit.year + ", ";
 					if(cit.pages.includes("-")){
@@ -542,7 +529,54 @@ select option {
 				}else if(cit.genre = 'website'){
 					fin += "<i>" + cit.title + "</i>. " + sentenceAssemble(cit.publisher, dateFormat(cit.year, cit.month, cit.day), cit.doi_url) + (cit.updatedyear != "" || cit.updatedmonth != "" || cit.updatedday != "" ? " Accessed: " + dateFormat(cit.updatedyear, cit.updatedmonth, cit.updatedday) + ".": "");
 				}
-				newversion.push(fin);
+				newversion.push(fin + "</p>");
+			}
+			return alphabeautify(newversion);
+		}
+
+		function generateAPA(){
+			var newversion = [];
+			for(var a = 0; a < citations.length; ++a){
+				var cit = citations[a];
+				
+				var fin = "<p>" + authorText(cit);
+				if(cit.genre == 'journal-article'){
+					fin += "\"" + cit.title + ".\"" + " <i>" + cit.journal_name + "</i>, vol. " + cit.volume + ", no. " + cit.issue + ", " + cit.year + ", ";
+					if(cit.pages.includes("-")){
+						fin += "pp. ";
+					}else{
+						fin += "p. ";
+					}
+					fin += cit.pages + ".";
+				}else if(cit.genre == 'book'){
+					fin += "<i>" + cit.title + "</i>. " + sentenceAssemble(cit.pubcity, cit.publisher, cit.year);
+				}else if(cit.genre = 'website'){
+					fin += "<i>" + cit.title + "</i>. " + sentenceAssemble(cit.publisher, dateFormat(cit.year, cit.month, cit.day), cit.doi_url) + (cit.updatedyear != "" || cit.updatedmonth != "" || cit.updatedday != "" ? " Accessed: " + dateFormat(cit.updatedyear, cit.updatedmonth, cit.updatedday) + ".": "");
+				}
+				newversion.push(fin + "</p>");
+			}
+			return alphabeautify(newversion);
+		}
+		function generateChicago(){
+			var newversion = [];
+			for(var a = 0; a < citations.length; ++a){
+				var cit = citations[a];
+				
+				var fin = "<p>" + authorText(cit);
+				if(cit.genre == 'journal-article'){
+					fin += "\"" + cit.title + ".\"" + " <i>" + cit.journal_name + "</i>, vol. " + cit.volume + ", no. " + cit.issue + ", " + cit.year + ", ";
+					if(cit.pages.includes("-")){
+						fin += "pp. ";
+					}else{
+						fin += "p. ";
+					}
+					fin += cit.pages + ".";
+				}else if(cit.genre == 'book'){
+					fin += "<i>" + cit.title + "</i>. " + sentenceAssemble(cit.pubcity, cit.publisher, cit.year);
+				}else if(cit.genre = 'website'){
+					fin += "<i>" + cit.title + "</i>. " + sentenceAssemble(cit.publisher, dateFormat(cit.year, cit.month, cit.day), cit.doi_url) + (cit.updatedyear != "" || cit.updatedmonth != "" || cit.updatedday != "" ? " Accessed: " + dateFormat(cit.updatedyear, cit.updatedmonth, cit.updatedday) + ".": "");
+				}
+				newversion.push(fin + "</p>");
 			}
 			return alphabeautify(newversion);
 		}
@@ -601,11 +635,8 @@ select option {
 	<hr align="left"/>
 	<div id="citations">
 		<input type="submit" value="MLA" name="MLA" onclick="updateFormat('MLA')">
-		<!--
 		<input type="submit" value="APA" name="APA" onclick="updateFormat('APA')">
-		<input type="submit" value="Chicago (History)" name="ChicagoA" onclick="updateFormat('ChicagoA')">
-		<input type="submit" value="Chicago (Science)" name="ChicagoB" onclick="updateFormat('ChicagoB')">
-		<input type="submit" value="IEEE" name="IEEE" onclick="updateFormat('IEEE')"> -->
+		<input type="submit" value="Chicago" name="ChicagoA" onclick="updateFormat('Chicago')">
 		<h2>Your Citations:</h2>
 		<div id="savedcitations">
 			

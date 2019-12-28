@@ -502,6 +502,10 @@ select option {
 			}
 			return "";
 		}
+		function clearCitations(){
+			citations = [];
+			updateDisplay();
+		}
 		/*
 
 		TODO: 
@@ -642,7 +646,7 @@ select option {
 			
 		</div>
 		<br>
-		<input type="submit" value="Clear Citations">
+		<input type="submit" value="Clear Citations" onclick="clearCitations()">
 	</div>
 </body>
 </html>

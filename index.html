@@ -6,22 +6,85 @@
 		body {
 			font-family: "Trebuchet MS", Helvetica, sans-serif;
 		}
-		#bigbox {
-			width: 60%;
-			height: 40px;
-			min-width: 200px;
+		div {
+			width: 80%;
+		}
+		input[type=text] {
+			margin: 4px;
+			height: 30px;
+			min-width: 20px;
 			max-width: 2000px;
 			padding: 6px;
 			box-sizing: border-box;
 			font-size: 15pt;
 			border: 2px black solid;
 			border-radius: 5px;
+		}/* TODO: update results css to show in 12pt times new roman */
+		/* SELECT CSS START */
+		select {
+	display: block;
+	font-size: 15px;
+	font-weight: 700;
+	color: #444;
+	line-height: 1.3;
+	padding: .6em 1.4em .5em .8em;
+	width: 60%;
+	max-width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	border: 1px solid #aaa;
+	box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+	border-radius: .5em;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+	background-color: #fff;
+	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+	background-repeat: no-repeat, repeat;
+	background-position: right .7em top 50%, 0 0;
+	background-size: .65em auto, 100%;
+}
+select::-ms-expand {
+	display: none;
+}
+select:hover {
+	border-color: #888;
+}
+select:focus {
+	border-color: #aaa;
+	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+	box-shadow: 0 0 0 3px -moz-mac-focusring;
+	color: #222;
+	outline: none;
+}
+select option {
+	font-weight:normal;
+}
+
+
+/* SELECT CSS END */
+
+
+		#vpubloc {
+			width: 200px;
+		}
+		#bigbox{
+			width: 60%;
+			height: 40px;
+		}
+		.date {
+			width: 80px;
+			min-width: 10px;
+		}
+		input:placeholder-shown{
+			border: 2px #FFC312 solid;
 		}
 		input[type=submit] {
 			border-radius: 5px;
 			border: 2px black solid;
 			height: 40px;
 			font-size: 15pt;
+			color: white;
 		}
 		input[type=submit]:active {
 			background-color: white; 
@@ -29,6 +92,37 @@
 		}
 		input[type=submit]:hover {
 			background-color: #ecf0f1;
+		}
+		input[name=MLA]{
+			background-color: #5758BB;
+		}
+		input[name=MLA]:hover {
+			background-color: #9980FA;
+		}
+		input[name=APA] {
+			background-color: #1B1464;
+			color: white;
+		}
+		input[name=APA]:hover {
+			background-color: #0652DD;
+		}
+		input[name=ChicagoA] {
+			background-color: #EA2027;
+		}
+		input[name=ChicagoA]:hover {
+			background-color: #EE5A24;
+		}
+		input[name=ChicagoB] {
+			background-color: #006266;
+		}
+		input[name=ChicagoB]:hover {
+			background-color: #009432;
+		}
+		input[name=IEEE] {
+			background-color: #F79F1F;
+		}
+		input[name=IEEE]:hover {
+			background-color: #FFC312;
 		}
 		hr {
 			width: 60%;
@@ -39,28 +133,198 @@
 		#citations {
 			display: none;
 		}
+		#verifydiv {
+			display: none;
+		}
+		.but{
+			border: 1px solid black;
+			border-radius: 3px;
+			margin: 5px;
+			padding: 2px;
+			color: inherit;
+			text-decoration: inherit;
+		}
+		#vtitl, #vurl{ width: 50%; }
 	</style>
 	<script type="text/javascript">
 		function cite(){
 
 			var query = document.getElementById("bigbox").value;
 
+			var doi = false;
 			//DOI Input
-			if(query.toLowerCase().startsWith("")){
-				var request = createCORSRequest("get", "https://api.unpaywall.org/v2/" + query + "?email=" + Math.random().toString(36).substring(7));
+			if(query.toLowerCase().startsWith("10.") || query.toLowerCase().startsWith("https://doi.org") || query.toLowerCase().startsWith("https://dx.doi.org")){
+				var request = createCORSRequest("get", "http://api.unpaywall.org/v2/" + query + "?email=" + Math.random().toString(36).substring(7));
 				if (request){
     				request.onload = function() {
     					var text = JSON.parse(request.responseText);
     					if(text.HTTP_status_code != "404"){
-    						alert(request.responseText);
+    						doi = true;
+    						//get issue, volume, etc.
+    						var request2 = createCORSRequest("get", "https://api.crossref.org/works/" + query);
+    						if (request2){
+    							request2.onload = function() {
+    								
+    								var msg = JSON.parse(request2.responseText).message;
+    								var unp_date = text.published_date.split("-");
+    								var month = parseInt(unp_date[1]);
+    								var day = parseInt(unp_date[2]);
+
+    								var unp_update = text.updated.substring(0,10).split("-");
+    								var upyear = parseInt(unp_update[0]);
+    								var upmonth = parseInt(unp_update[1]);
+    								var upday = parseInt(unp_update[2]);
+    								
+    								displayGeneric(text.genre, text.z_authors, text.title, text.year, month, day, text.journal_name, text.doi_url, text.publisher, upyear, upmonth, upday, msg.volume, msg.issue, msg.page, "");
+    							}; 
+    							request2.send();							
+    						}
     					}
     				};
     				request.send();
 				}
 			}
-
+			//website/other
+			if(query.toLowerCase().startsWith("http://") || query.toLowerCase().startsWith("https://")){
+				var d = new Date();
+				displayGeneric("website", [], "", "", "", "", "", query, "", d.getFullYear(), d.getMonth() + 1, d.getDate(), "", "", "", "");
+			}else{//book search display -- needs a cancel button
+				var request = createCORSRequest("get", "https://www.googleapis.com/books/v1/volumes?q=" + query);
+				if (request){
+    				request.onload = function() {
+    					var res = JSON.parse(request.responseText);
+    					var booktext = "";
+    					for(var i = 0; i < res.items.length; ++i){
+    						booktext += "<br>";
+    						booktext += "<input type='submit' value='Select' onclick='selectBook(" + i + ")'>  ";
+    						booktext += "<i>" + res.items[i].volumeInfo.title + "</i>";
+    						if(!res.items[i].volumeInfo.hasOwnProperty("authors") || res.items[i].volumeInfo.authors.length == 0){
+    							booktext += ". ";
+    						}else if(res.items[i].volumeInfo.authors.length == 1){
+    							booktext += " by " + res.items[i].volumeInfo.authors[0] + ". ";
+    						}else{
+    							booktext += " by " + res.items[i].volumeInfo.authors[0] + " et al. ";
+    						}
+    						//console.log(JSON.stringify(res.items[i].volumeInfo));
+    						if(res.items[i].volumeInfo.hasOwnProperty("publisher")){
+    							booktext += res.items[i].volumeInfo.publisher + ", " + res.items[i].volumeInfo.publishedDate + ".<br>";
+    						}else{
+    							booktext += res.items[i].volumeInfo.publishedDate + ".<br>";
+    						}
+    					}
+    					document.getElementById('searchresults').innerHTML = booktext;
+    					document.getElementById("searchdiv").style.display = "initial";
+    					booksshown = res;
+    				};
+    				request.send();
+    			}
+			}
 			return false;
 		}
+		var citations = [];
+		var format = "MLA";
+		//in the future, may want to use journal_issns to normalize journal_names
+		//formats: MLA, APA, Chicago (History), Chicago (Natural Science), IEEE
+		function displayGeneric(_genre, _authors, _title, _year, _month, _day, _journal_name, _doi_url, _publisher, _updatedyear, _updatedmonth, _updatedday, _volume, _issue, _pages, _pubcity){//16 args
+			var citation = {genre: _genre,
+				authors: _authors,
+				title: _title, 
+				year: _year,
+				month: _month,
+				day: _day,
+				journal_name: _journal_name,
+				doi_url: _doi_url,
+				publisher: _publisher,
+				updatedyear: _updatedyear,
+				updatedmonth: _updatedmonth,
+				updatedday: _updatedday,
+				volume: _volume,
+				issue: _issue,
+				pages: _pages,
+				pubcity: _pubcity
+			};
+			//alert(citation.genre + ", " + citation.authors + ", " + citation.title + ", " + citation.year + ", " + citation.month + ", " + citation.day + ", " + citation.journal_name + ", " + citation.doi_url + ", " + citation.publisher + ", " + citation.updatedyear + ", " + citation.updatedmonth + ", " + citation.updatedday + ", " + citation.volume + ", " + citation.issue + ", " + citation.pages);
+			currentCitation = citation;
+
+			document.getElementById('vsf').value = citation.genre;
+			//populate verifydiv with known values
+			if(citation.hasOwnProperty('authors')){
+				var htm = "";
+				for(var i = 0; i < citation.authors.length; ++i){
+					htm += "First: <input type='text' class='vauthf' value='" + formatLastName(citation.authors[i].given) + "'>, Last: <input type='text' class='vauthl' value='" + formatLastName(citation.authors[i].family) + "'><br>";
+				}
+				document.getElementById("authdiv").innerHTML = htm;
+			}else{
+				document.getElementById("authdiv").innerHTML = "First: <input type='text' class='vauthf'>, Last: <input type='text' class='vauthl'><br>";
+			}
+			//document.getElementById('vauth').value = "";
+			
+			document.getElementById('vtitl').value = citation.title;
+			document.getElementById('vyear').value = citation.year;
+			document.getElementById('vmont').value = citation.month;
+			document.getElementById('vday').value = citation.day;
+			document.getElementById('vjnam').value = citation.journal_name;
+			document.getElementById('vurl').value = citation.doi_url;
+			document.getElementById('vpubl').value = citation.publisher;
+			document.getElementById('vpubloc').value = citation.pubcity;
+			document.getElementById('vvol').value = citation.volume;
+			document.getElementById('viss').value = citation.issue;
+			document.getElementById('vpag').value = citation.pages;
+			document.getElementById('vuyear').value = citation.updatedyear;
+			document.getElementById('vumont').value = citation.updatedmonth;
+			document.getElementById('vuday').value = citation.updatedday;
+
+
+			document.getElementById('verifydiv').style.display = "initial";
+		}
+		var currentCitation = {};
+		function verifyCitationDialog(){
+			var neo = currentCitation;
+
+			var savf = document.getElementsByClassName("vauthf");
+			var savl = document.getElementsByClassName("vauthl");
+			var newauths = [];
+			for(var a = 0; a < savf.length; ++a){
+				newauths.push({family:savl[a].value, given:savf[a].value});
+			}
+			neo.authors = newauths;
+			//re-enter citation modified values. TODO
+			neo.genre = document.getElementById("vsf").value;
+			neo.title = document.getElementById('vtitl').value;
+			neo.year = document.getElementById('vyear').value;
+			neo.month = document.getElementById('vmont').value;
+			neo.day = document.getElementById('vday').value;
+			neo.journal_name = document.getElementById('vjnam').value;
+			neo.doi_url = document.getElementById('vurl').value;
+			neo.publisher = document.getElementById('vpubl').value;
+			neo.pubcity = document.getElementById('vpubloc').value;
+			neo.volume = document.getElementById('vvol').value;
+			neo.issue = document.getElementById('viss').value;
+			neo.pages = document.getElementById('vpag').value;
+			neo.updatedyear = document.getElementById('vuyear').value;
+			neo.updatedmonth = document.getElementById('vumont').value;
+			neo.updatedday = document.getElementById('vuday').value;
+
+			document.getElementById("verifydiv").style.display = "none";
+			citations.push(neo);
+			updateDisplay();
+			return false;
+		}
+
+		function changeAuthors(num){
+			if(num == 0){
+				var savf = document.getElementsByClassName("vauthf");
+				var savl = document.getElementsByClassName("vauthl");
+				var nijo = "";
+				for(var a = 0; a < savf.length - 1; ++a){
+					nijo += "First: <input type='text' class='vauthf' value='" + savf[a].value + "'>, Last: <input type='text' class='vauthl' value='" + savl[a].value + "'><br>";
+				}
+				document.getElementById('authdiv').innerHTML = nijo;
+			}else{
+				document.getElementById('authdiv').innerHTML = document.getElementById('authdiv').innerHTML + "First: <input type='text' class='vauthf' value=''>, Last: <input type='text' class='vauthl' value=''><br>";
+			}
+		}
+
 		function createCORSRequest(method, url){
     		var xhr = new XMLHttpRequest();
     		if ("withCredentials" in xhr){
@@ -73,6 +337,215 @@
     		}
     		return xhr;
 		}
+		function formatLastName(name){
+			var spl = name.split(" ");
+			var ret = "";
+			if(spl.length > 0)
+				ret += (spl[0].length >= 1 ? spl[0].substring(0, 1).toUpperCase() + spl[0].substring(1).toLowerCase() : "");
+			for(var i = 1; i < spl.length; ++i){
+				ret += (spl[i].length >= 1 ? " " + spl[i].substring(0, 1).toUpperCase() + spl[i].substring(1).toLowerCase() : "");
+			}
+			return ret;
+		}
+		function updateDisplay(){
+			if(format == "MLA"){
+				document.getElementById("savedcitations").innerHTML = generateMLA();
+			}else if(format == "APA"){
+				document.getElementById("savedcitations").innerHTML = JSON.stringify(citations);//todo
+			}else if(format == "ChicagoA"){
+				document.getElementById("savedcitations").innerHTML = JSON.stringify(citations);
+			}else if(format == "ChicagoB"){
+				document.getElementById("savedcitations").innerHTML = JSON.stringify(citations);
+			}else if(format == "IEEE"){
+				document.getElementById("savedcitations").innerHTML = JSON.stringify(citations);
+			}
+			document.getElementById("citations").style.display = "initial";
+		}
+		function updateFormat(_format){
+			format = _format;
+			updateDisplay();
+		}
+		var booksshown = {};
+		function selectBook(id){
+			var item = booksshown.items[id].volumeInfo;
+			var year = "", month = "", day = "";
+			if(item.hasOwnProperty('publishedDate')){
+				if(item.publishedDate.length == 4){
+					year = item.publishedDate;
+				}else if(item.publishedDate.length == 7){
+					year = item.publishedDate.substring(0, 4);
+					month = minz(item.publishedDate.substring(5,6));
+				}else if(item.publishedDate.length == 10){
+					year = item.publishedDate.substring(0, 4);
+					month = minz(item.publishedDate.substring(5,7));
+					day = minz(item.publishedDate.substring(8,10));
+				}
+			}
+			document.getElementById('searchresults').innerHTML = "";
+    		document.getElementById("searchdiv").style.display = "none";
+
+
+    		var request = createCORSRequest("get", "https://openlibrary.org/api/books?bibkeys=ISBN:" + item.industryIdentifiers[0].identifier + "&format=json&jscmd=data");
+			if (request){
+    			request.onload = function() {
+    				var res = JSON.parse(request.responseText);
+    				if(res.hasOwnProperty("ISBN:" + item.industryIdentifiers[0].identifier)){
+    					displayGeneric("book", item.hasOwnProperty("authors") ? googAuthors(item.authors) : "", item.title, year, month, day, "", "", (item.hasOwnProperty("publisher") ? item.publisher : ""), "", "", "", "", "", "", (res["ISBN:" + item.industryIdentifiers[0].identifier].hasOwnProperty("publish_places") ? res["ISBN:" + item.industryIdentifiers[0].identifier].publish_places[0].name : ""));
+    				}else{
+    					displayGeneric("book", item.hasOwnProperty("authors") ? googAuthors(item.authors) : "", item.title, year, month, day, "", "", (item.hasOwnProperty("publisher") ? item.publisher : ""), "", "", "", "", "", "", "");
+    				}
+				};
+    			request.send();
+    		}else{
+				//genre, _authors, _title, _year, _month, _day, _journal_name, _doi_url, _publisher, _updatedyear, _updatedmonth, _updatedday, _volume, _issue, _pages
+				displayGeneric("book", item.hasOwnProperty("authors") ? googAuthors(item.authors) : "", item.title, year, month, day, "", "", (item.hasOwnProperty("publisher") ? item.publisher : ""), "", "", "", "", "", "", "");
+			}
+		}
+		function minz (str){
+			while(str.startsWith("0") && str.length > 1){
+				str = str.substring(1);
+			}
+			return str;
+		}
+		function googAuthors (aut){
+			var ret = [];
+			for(var i = 0; i < aut.length; ++i){
+				var a = aut[i];
+				var last = a.split(" ")[a.split(" ").length - 1].trim();
+				var first = a.substring(0, a.length - last.length).trim();
+				ret.push({family: last, given: first});
+			}
+			return ret;
+		}
+		function authorText(cit){
+			var fin = "";
+			//author stuff
+			if(cit.authors.length == 1){
+				fin += cit.authors[0].family + (cit.authors[0].family != "" && cit.authors[0].given != "" ? ", " : "") + cit.authors[0].given;
+			}else if(cit.authors.length == 2){
+				fin += cit.authors[0].family + (cit.authors[0].family != "" && cit.authors[0].given != "" ? ", " : "") + cit.authors[0].given + " and " + cit.authors[1].family + (cit.authors[1].family != "" && cit.authors[1].given != "" ? ", " : "") + cit.authors[1].given;
+			}else{
+				for(var b = 0; b < cit.authors.length; ++b){
+					fin += cit.authors[b].family + (cit.authors[b].family != "" && cit.authors[b].given != "" ? ", " : "") + cit.authors[b].given;
+					if(b != cit.authors.length -1){
+						fin += ", ";
+					}
+				}
+			}
+			if(cit.authors.length != 0){
+				fin += ". ";
+			}
+			return fin;
+		}
+		function alphabeautify(version){
+			var str = "";
+			version.sort(function(a, b){
+				var c = a.replace("<i>", "").replace("</i>", "").replace(" ", "").replace("\"", "").replace(".", "").replace(",", "");
+				var d = b.replace("<i>", "").replace("</i>", "").replace(" ", "").replace("\"", "").replace(".", "").replace(",", "");
+				return c > d;
+			});
+			for(var g = 0; g < version.length; ++g){
+				str += version[g];
+				str += "<br><br>";
+			}
+			return str;
+		}
+
+		function sentenceAssemble(...items){
+			var nl = [];
+			for(var i = 0; i < items.length; ++i){
+				if(items[i] != ""){
+					nl.push(items[i]);
+				}
+			}
+			if(nl.length >= 1){
+				var str = "";
+				for(var j = 0; j < nl.length - 1; ++j){
+					str += nl[j] + ", ";
+				}
+				str += nl[nl.length - 1] + ".";
+				return str;
+			}else{
+				return "";
+			}
+		}
+		function dateFormat(year, month, day){
+			if(day != "" && month != "" && year != ""){
+				return day + " " + monthStr(month) + " " + year;
+			}else if(month != "" && year != ""){
+				return monthStr(month) + " " + year;
+			}else if(year != ""){
+				return year;
+			}else if(month != "" && day != ""){
+				return day + " " + monthStr(month);
+			}else if(month != ""){
+				return month;
+			}else if(day != ""){
+				return day;
+			}
+			return "";
+		}
+		function monthStr(month){
+			if(month != ""){
+				if(month == 1){
+					return "Jan";
+				}else if(month == 2){
+					return "Feb";
+				}else if(month == 3){
+					return "Mar";
+				}else if(month == 4){
+					return "Apr";
+				}else if(month == 5){
+					return "May";
+				}else if(month == 6){
+					return "Jun";
+				}else if(month == 7){
+					return "Jul";
+				}else if(month == 8){
+					return "Aug";
+				}else if(month == 9){
+					return "Sep";
+				}else if(month == 10){
+					return "Oct";
+				}else if(month == 11){
+					return "Nov";
+				}else if(month == 12){
+					return "Dec";
+				}
+			}
+			return "";
+		}
+		/*
+
+		TODO: 
+		- Make sure multiple authors are correctly listed.
+		- Fix ordering of works by same author
+		- 
+
+		*/
+		function generateMLA(){
+			var newversion = [];
+			for(var a = 0; a < citations.length; ++a){
+				var cit = citations[a];
+				
+				var fin = authorText(cit);
+				if(cit.genre == 'journal-article'){
+					fin += "\"" + cit.title + ".\"" + " <i>" + cit.journal_name + "</i>, vol. " + cit.volume + ", no. " + cit.issue + ", " + cit.year + ", ";
+					if(cit.pages.includes("-")){
+						fin += "pp. ";
+					}else{
+						fin += "p. ";
+					}
+					fin += cit.pages + ".";
+				}else if(cit.genre == 'book'){
+					fin += "<i>" + cit.title + "</i>. " + sentenceAssemble(cit.pubcity, cit.publisher, cit.year);
+				}else if(cit.genre = 'website'){
+					fin += "<i>" + cit.title + "</i>. " + sentenceAssemble(cit.publisher, dateFormat(cit.year, cit.month, cit.day), cit.doi_url) + (cit.updatedyear != "" || cit.updatedmonth != "" || cit.updatedday != "" ? " Accessed: " + dateFormat(cit.updatedyear, cit.updatedmonth, cit.updatedday) + ".": "");
+				}
+				newversion.push(fin);
+			}
+			return alphabeautify(newversion);
+		}
 	</script>
 </head>
 <body>
@@ -82,6 +555,7 @@
 		<input type="text" name="bigbox" id="bigbox" placeholder="Enter DOI, Link, Title, etc...">
 		<input type="submit" value="Search">
 	</form>
+	<input type="submit" value="Manual Entry" onclick="displayGeneric('other','','','','','','','','','','','','','','','')">
 	<h2 id="dots"></h2>
 	<div id="searchdiv">
 		<hr align="left"/>
@@ -90,12 +564,53 @@
 		</div>
 		<input type="submit" value="Cancel">
 	</div>
+	<div id="verifydiv">
+		Not all fields need to be filled out. Do the best you can! Citing sources is not a precise endeavor.
+		<form name="verify" onsubmit="return verifyCitationDialog()">
+			<br>
+			<b>Source Format: </b>
+			<select id="vsf">
+				<option value="journal-article">Journal Article</option>
+				<option value="book">Book</option>
+				<option value="website">Website</option>
+				<option value="other">Other</option>
+			</select>
+			<br>
+			Authors:
+			<div id="authdiv">
+				Author: <input type='text' id="vauth"><br>
+			</div>
+			<a class="but" href="javascript:changeAuthors(1)">Add Author</a>
+			<a class="but" href="javascript:changeAuthors(0)">Remove Author</a>
+			<br>
+			<br>
+			Title: <input type="text" id="vtitl" placeholder="------"><br><br>
+			Date Published:<br>
+			Year: <input type="text" class="date" id="vyear" placeholder="2019"> Month: <input type="text" class="date" id="vmont" placeholder="1"> Day: <input type="text" class="date" id="vday" placeholder="1"><br><br>
+			Journal Name (academic papers only): <input type="text" id="vjnam" placeholder="------"><br>
+			URL: <input type=text id="vurl" placeholder="https://------.org"><br>
+			Publisher: <input type="text" id="vpubl" placeholder="------"> Publisher Location: <input type="text" id="vpubloc" placeholder="New York, NY"><br><br>
+			Volume: <input type="text" id="vvol" class="date" placeholder="1"> Issue: <input type="text" id="viss" class="date" placeholder="1"><br>
+			Pages: <input type="text" id="vpag" placeholder="e.g. 121-134"><br>
+			<br>
+			Date Last Updated (only used for websites):<br>
+			Year: <input type="text" class="date" id="vuyear" placeholder="2019"> Month: <input type="text" class="date" id="vumont" placeholder="1"> Day: <input type="text" class="date" id="vuday" placeholder="1"><br>
+			<input type="submit" value="Approve Citation">
+		</form>
+	</div>
 	<hr align="left"/>
 	<div id="citations">
+		<input type="submit" value="MLA" name="MLA" onclick="updateFormat('MLA')">
+		<!--
+		<input type="submit" value="APA" name="APA" onclick="updateFormat('APA')">
+		<input type="submit" value="Chicago (History)" name="ChicagoA" onclick="updateFormat('ChicagoA')">
+		<input type="submit" value="Chicago (Science)" name="ChicagoB" onclick="updateFormat('ChicagoB')">
+		<input type="submit" value="IEEE" name="IEEE" onclick="updateFormat('IEEE')"> -->
 		<h2>Your Citations:</h2>
 		<div id="savedcitations">
 			
 		</div>
+		<br>
 		<input type="submit" value="Clear Citations">
 	</div>
 </body>

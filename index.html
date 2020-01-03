@@ -2,147 +2,188 @@
 <html>
 <head>
 	<title>RefCite - Cite Sources!</title>
+
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	
+
 	<style type="text/css">
-		body {
-			font-family: "Trebuchet MS", Helvetica, sans-serif;
-		}
-		div {
-			width: 80%;
-		}
-		input[type=text] {
-			margin: 4px;
-			height: 30px;
-			min-width: 20px;
-			max-width: 2000px;
-			padding: 6px;
-			box-sizing: border-box;
-			font-size: 15pt;
-			border: 2px black solid;
-			border-radius: 5px;
-		}/* TODO: update results css to show in 12pt times new roman */
-		/* SELECT CSS START */
-		select {
-	display: block;
-	font-size: 15px;
-	font-weight: 700;
-	color: #444;
-	line-height: 1.3;
-	padding: .6em 1.4em .5em .8em;
-	width: 60%;
-	max-width: 100%;
-	box-sizing: border-box;
-	margin: 0;
-	border: 1px solid #aaa;
-	box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
-	border-radius: .5em;
-	-moz-appearance: none;
-	-webkit-appearance: none;
-	appearance: none;
-	background-color: #fff;
-	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-	background-repeat: no-repeat, repeat;
-	background-position: right .7em top 50%, 0 0;
-	background-size: .65em auto, 100%;
-}
-select::-ms-expand {
-	display: none;
-}
-select:hover {
-	border-color: #888;
-}
-select:focus {
-	border-color: #aaa;
-	box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
-	box-shadow: 0 0 0 3px -moz-mac-focusring;
-	color: #222;
-	outline: none;
-}
-select option {
-	font-weight:normal;
-}
-
-
-/* SELECT CSS END */
-
-
-		#vpubloc {
-			width: 200px;
-		}
-		#bigbox{
-			width: 60%;
-			height: 40px;
-		}
-		.date {
-			width: 80px;
-			min-width: 10px;
-		}
-		input:placeholder-shown{
-			border: 2px #FFC312 solid;
-		}
-		input[type=submit] {
-			border-radius: 5px;
-			border: 2px black solid;
-			height: 40px;
-			font-size: 15pt;
-			color: white;
-		}
-		input[type=submit]:active {
-			background-color: white; 
-			color: black;
-		}
-		input[type=submit]:hover {
-			background-color: #ecf0f1;
-		}
-		input[name=MLA]{
-			background-color: #5758BB;
-		}
-		input[name=MLA]:hover {
-			background-color: #9980FA;
-		}
-		input[name=APA] {
-			background-color: #1B1464;
-			color: white;
-		}
-		input[name=APA]:hover {
-			background-color: #0652DD;
-		}
-		input[name=ChicagoA] {
-			background-color: #EA2027;
-		}
-		input[name=ChicagoA]:hover {
-			background-color: #EE5A24;
-		}
-		hr {
-			width: 60%;
-		}
-		#searchdiv {
-			display: none;
-		}
-		#citations {
-			display: none;
-		}
-		#verifydiv {
-			display: none;
-		}
-		.but{
-			border: 1px solid black;
-			border-radius: 3px;
-			margin: 5px;
-			padding: 2px;
-			color: inherit;
-			text-decoration: inherit;
-		}
-		#vtitl, #vurl{ width: 50%; }
-
+		
 		#savedcitations {
 			font-family: "Times New Roman", Times, serif;
 		}
+		#manualentry{
+			border-color: #1B1464;
+			background-color: #1B1464;
+		}
+		#searchdiv, #verifydiv {
+			display: none;
+		}
 	</style>
+
+</head>
+<body>
+	<br>
+	<div class="container-fluid">
+	<div class="container">
+	<h2>Create a Citation</h2>
+	<form name="search" onsubmit="return cite()">
+		<div class="form-group">
+			<div class="row">
+				<div class="col-8">
+				<input type="text" class="form-control" id="bigbox" placeholder="Enter DOI, Link, Title, etc...">
+				</div>
+				<div class="col-3">
+				<input type="submit" class="btn btn-primary" value="Search">
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="row">
+		<div class="col-8"></div>
+		<div class="col-3">
+		<input type="submit" value="Manual Entry" id="manualentry" class="btn btn-primary" onclick="displayGeneric('other','','','','','','','','','','','','','','','')">
+		</div>
+	</div>
+	</div>
+	<div id="searchdiv" class="container">
+		<hr align="left" />
+		<div id="searchresults">
+			
+		</div>
+		<input type="submit" class="btn btn-danger" value="Cancel">
+	</div>
+	<br>
+	<div class="row">
+	<div id="verifydiv" class="jumbotron container col-8">
+		<h3>Verify Details</h3>
+		Not all fields need to be filled out. Do the best you can! Citing sources is not a precise endeavor.<br><br>
+		<form name="verify" id="verifyform">
+			<div class="form-group">
+			<b>Source Format: </b>
+			<select id="vsf" class="form-control">
+				<option value="journal-article">Journal Article</option>
+				<option value="book">Book</option>
+				<option value="website">Website</option>
+				<option value="other">Other</option>
+			</select>
+			<br>
+			<b>Authors:</b>
+			<div id="authdiv">
+				
+			</div>
+			<br>
+			<a class="but btn btn-primary" href="javascript:changeAuthors(1)">Add Author</a>
+			<a class="but btn btn-danger" href="javascript:changeAuthors(0)">Remove Author</a>
+			<br><br>
+			<b>Title:</b><input type="text" id="vtitl" class="form-control" placeholder="">
+			<b>Date Published:</b>
+			<div class="row">
+			<div class="col-4">Year: <input type="text" class="date form-control" id="vyear" placeholder=""></div>
+			<div class="col-4">Month: <input type="text" class="date form-control" id="vmont" placeholder=""></div>
+			<div class="col-4">Day: <input type="text" class="date form-control" id="vday" placeholder=""></div>
+			</div>
+			<b>Journal Name (if journal article):</b><input type="text" id="vjnam" class="form-control" placeholder="">
+			<b>URL:</b><input type=text class="form-control" id="vurl" placeholder="">
+			<div class="row">
+			<div class="col-6"><b>Publisher:</b><input type="text" class="form-control" id="vpubl" placeholder=""></div>
+			<div class="col-6"><b>Publisher Location:</b><input type="text" class="form-control" id="vpubloc" placeholder=""></div>
+			</div>
+			<div class="row">
+			<div class="col-6"><b>Volume:</b><input type="text" id="vvol" class="date form-control" placeholder=""></div><div class="col-6"><b>Issue:</b><input type="text" id="viss" class="date form-control" placeholder=""></div>
+			</div>
+			<b>Pages:</b><input type="text" id="vpag" class="form-control" placeholder="">
+			<b>Date Last Updated (only used for websites):</b><br>
+			<div class="row">
+			<div class="col-4">Year: <input type="text" class="date form-control" id="vuyear" placeholder=""></div>
+			<div class="col-4">Month: <input type="text" class="date form-control" id="vumont" placeholder=""></div>
+			<div class="col-4">Day: <input type="text" class="date form-control" id="vuday" placeholder=""></div>
+			</div>
+			<br><br>
+			<div class="row">
+				<div class="col-6">
+					<a class="btn btn-danger" onclick="return clearVerify()">Cancel</a>
+				</div>
+				<div class="col-6">
+					<input type="submit" class="btn btn-primary" value="Approve Citation">
+				</div>
+			</div>
+			</div>
+		</form>
+	</div>
+	<div class="col-3"></div>
+	</div>
+	<hr align="left"/>
+	<div id="citations" class="container">
+		<h2>Your Citations:</h2>
+		<input type="submit" class="btn btn-info" value="MLA" name="MLA" onclick="updateFormat('MLA')">
+		<input type="submit" class="btn btn-secondary" value="APA" name="APA" onclick="updateFormat('APA')">
+		<input type="submit" class="btn btn-success" value="Chicago" name="ChicagoA" onclick="updateFormat('Chicago')">
+		<br><br>
+		<div id="savedcitations">
+			
+		</div>
+		<br>
+		<input type="submit" class="btn btn-danger" value="Clear Citations" onclick="clearCitations()">
+		<br><br>
+	</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 	<script type="text/javascript">
+		$(document).ready(function(){
+			if(document.cookie != "" && document.cookie != "saved="){
+				/*alert(document.cookie);
+				alert(document.cookie.substring(6, document.cookie.length - 1));
+				alert(atob(document.cookie.substring(6, document.cookie.length - 1)));*/
+				citations = JSON.parse(atob(document.cookie.substring(6, document.cookie.length - 1))).mainList;
+				updateDisplay();
+			}
+		});
+		$("#verifyform").submit(function(event){
+			event.preventDefault();
+			var neo = currentCitation;
+
+			var savf = document.getElementsByClassName("vauthf");
+			var savl = document.getElementsByClassName("vauthl");
+			var newauths = [];
+			for(var a = 0; a < savf.length; ++a){
+				newauths.push({family:savl[a].value, given:savf[a].value});
+			}
+			neo.authors = newauths;
+			//re-enter citation modified values. TODO
+			neo.genre = $("#vsf").val();
+			neo.title = $('#vtitl').val();
+			neo.year = $('#vyear').val();
+			neo.month = $('#vmont').val();
+			neo.day = $('#vday').val();
+			neo.journal_name = $('#vjnam').val();
+			neo.doi_url = $('#vurl').val();
+			neo.publisher = $('#vpubl').val();
+			neo.pubcity = $('#vpubloc').val();
+			neo.volume = $('#vvol').val();
+			neo.issue = $('#viss').val();
+			neo.pages = $('#vpag').val();
+			neo.updatedyear = $('#vuyear').val();
+			neo.updatedmonth = $('#vumont').val();
+			neo.updatedday = $('#vuday').val();
+			$("#verifydiv").hide();
+			citations.push(neo);
+			document.cookie = "saved=" + btoa(JSON.stringify({"mainList": citations})) + ";";
+			//alert(btoa(JSON.stringify({"mainList": citations})));
+			updateDisplay();
+			return false;
+		});
+		function clearVerify(){
+			$("#verifydiv").hide();
+			return false;
+		}
 		function cite(){
 
-			var query = document.getElementById("bigbox").value;
-
+			var query = $("#bigbox").val();
 			var doi = false;
 			//DOI Input
 			if(query.toLowerCase().startsWith("10.") || query.toLowerCase().startsWith("https://doi.org") || query.toLowerCase().startsWith("https://dx.doi.org")){
@@ -175,9 +216,8 @@ select option {
     				};
     				request.send();
 				}
-			}
 			//website/other
-			if(query.toLowerCase().startsWith("http://") || query.toLowerCase().startsWith("https://")){
+			}else if(query.toLowerCase().startsWith("http://") || query.toLowerCase().startsWith("https://")){
 				var d = new Date();
 				displayGeneric("website", [], "", "", "", "", "", query, "", d.getFullYear(), d.getMonth() + 1, d.getDate(), "", "", "", "");
 			}else{//book search display -- needs a cancel button
@@ -188,7 +228,7 @@ select option {
     					var booktext = "";
     					for(var i = 0; i < res.items.length; ++i){
     						booktext += "<br>";
-    						booktext += "<input type='submit' value='Select' onclick='selectBook(" + i + ")'>  ";
+    						booktext += "<input type='submit' class='btn btn-primary' value='Select' onclick='selectBook(" + i + ")'>  ";
     						booktext += "<i>" + res.items[i].volumeInfo.title + "</i>";
     						if(!res.items[i].volumeInfo.hasOwnProperty("authors") || res.items[i].volumeInfo.authors.length == 0){
     							booktext += ". ";
@@ -204,8 +244,8 @@ select option {
     							booktext += res.items[i].volumeInfo.publishedDate + ".<br>";
     						}
     					}
-    					document.getElementById('searchresults').innerHTML = booktext;
-    					document.getElementById("searchdiv").style.display = "initial";
+    					$('#searchresults').html(booktext);
+    					$("#searchdiv").show();
     					booksshown = res;
     				};
     				request.send();
@@ -238,70 +278,38 @@ select option {
 			//alert(citation.genre + ", " + citation.authors + ", " + citation.title + ", " + citation.year + ", " + citation.month + ", " + citation.day + ", " + citation.journal_name + ", " + citation.doi_url + ", " + citation.publisher + ", " + citation.updatedyear + ", " + citation.updatedmonth + ", " + citation.updatedday + ", " + citation.volume + ", " + citation.issue + ", " + citation.pages);
 			currentCitation = citation;
 
-			document.getElementById('vsf').value = citation.genre;
+			$('#vsf').val(citation.genre);
 			//populate verifydiv with known values
 			if(citation.hasOwnProperty('authors')){
 				var htm = "";
 				for(var i = 0; i < citation.authors.length; ++i){
-					htm += "First: <input type='text' class='vauthf' value='" + formatLastName(citation.authors[i].given) + "'>, Last: <input type='text' class='vauthl' value='" + formatLastName(citation.authors[i].family) + "'><br>";
+					htm += "<div class='row'><div class='col-6'>First: <input type='text' class='vauthf form-control' value='" + formatLastName(citation.authors[i].given) + "'></div><div class='col-6'>Last: <input type='text' class='vauthl form-control' value='" + formatLastName(citation.authors[i].family) + "'></div></div>";
 				}
-				document.getElementById("authdiv").innerHTML = htm;
+				$("#authdiv").html(htm);
 			}else{
-				document.getElementById("authdiv").innerHTML = "First: <input type='text' class='vauthf'>, Last: <input type='text' class='vauthl'><br>";
+				$("#authdiv").html("<div class='row'><div class='col-6'>First: <input type='text' class='vauthf form-control' value=''></div><div class='col-6'>Last: <input type='text' class='vauthl form-control' value=''></div></div>");
 			}
-			//document.getElementById('vauth').value = "";
+			//$('#vauth').val("");
 			
-			document.getElementById('vtitl').value = citation.title;
-			document.getElementById('vyear').value = citation.year;
-			document.getElementById('vmont').value = citation.month;
-			document.getElementById('vday').value = citation.day;
-			document.getElementById('vjnam').value = citation.journal_name;
-			document.getElementById('vurl').value = citation.doi_url;
-			document.getElementById('vpubl').value = citation.publisher;
-			document.getElementById('vpubloc').value = citation.pubcity;
-			document.getElementById('vvol').value = citation.volume;
-			document.getElementById('viss').value = citation.issue;
-			document.getElementById('vpag').value = citation.pages;
-			document.getElementById('vuyear').value = citation.updatedyear;
-			document.getElementById('vumont').value = citation.updatedmonth;
-			document.getElementById('vuday').value = citation.updatedday;
+			$('#vtitl').val(citation.title);
+			$('#vyear').val(citation.year);
+			$('#vmont').val(citation.month);
+			$('#vday').val(citation.day);
+			$('#vjnam').val(citation.journal_name);
+			$('#vurl').val(citation.doi_url);
+			$('#vpubl').val(citation.publisher);
+			$('#vpubloc').val(citation.pubcity);
+			$('#vvol').val(citation.volume);
+			$('#viss').val(citation.issue);
+			$('#vpag').val(citation.pages);
+			$('#vuyear').val(citation.updatedyear);
+			$('#vumont').val(citation.updatedmonth);
+			$('#vuday').val(citation.updatedday);
 
 
-			document.getElementById('verifydiv').style.display = "initial";
+			$('#verifydiv').show();
 		}
 		var currentCitation = {};
-		function verifyCitationDialog(){
-			var neo = currentCitation;
-
-			var savf = document.getElementsByClassName("vauthf");
-			var savl = document.getElementsByClassName("vauthl");
-			var newauths = [];
-			for(var a = 0; a < savf.length; ++a){
-				newauths.push({family:savl[a].value, given:savf[a].value});
-			}
-			neo.authors = newauths;
-			//re-enter citation modified values. TODO
-			neo.genre = document.getElementById("vsf").value;
-			neo.title = document.getElementById('vtitl').value;
-			neo.year = document.getElementById('vyear').value;
-			neo.month = document.getElementById('vmont').value;
-			neo.day = document.getElementById('vday').value;
-			neo.journal_name = document.getElementById('vjnam').value;
-			neo.doi_url = document.getElementById('vurl').value;
-			neo.publisher = document.getElementById('vpubl').value;
-			neo.pubcity = document.getElementById('vpubloc').value;
-			neo.volume = document.getElementById('vvol').value;
-			neo.issue = document.getElementById('viss').value;
-			neo.pages = document.getElementById('vpag').value;
-			neo.updatedyear = document.getElementById('vuyear').value;
-			neo.updatedmonth = document.getElementById('vumont').value;
-			neo.updatedday = document.getElementById('vuday').value;
-
-			document.getElementById("verifydiv").style.display = "none";
-			citations.push(neo);
-			updateDisplay();
-			return false;
-		}
 
 		function changeAuthors(num){
 			if(num == 0){
@@ -309,11 +317,11 @@ select option {
 				var savl = document.getElementsByClassName("vauthl");
 				var nijo = "";
 				for(var a = 0; a < savf.length - 1; ++a){
-					nijo += "First: <input type='text' class='vauthf' value='" + savf[a].value + "'>, Last: <input type='text' class='vauthl' value='" + savl[a].value + "'><br>";
+					nijo += "<div class='row'><div class='col-6'>First: <input type='text' class='vauthf form-control' value='" + savf[a].value + "'></div><div class='col-6'>Last: <input type='text' class='vauthl form-control' value='" + savl[a].value + "'></div></div>";
 				}
-				document.getElementById('authdiv').innerHTML = nijo;
+				$('#authdiv').html(nijo);
 			}else{
-				document.getElementById('authdiv').innerHTML = document.getElementById('authdiv').innerHTML + "First: <input type='text' class='vauthf' value=''>, Last: <input type='text' class='vauthl' value=''><br>";
+				$('#authdiv').html($('#authdiv').html() + "<div class='row'><div class='col-6'>First: <input type='text' class='vauthf form-control' value=''></div><div class='col-6'>Last: <input type='text' class='vauthl form-control' value=''></div></div>");
 			}
 		}
 
@@ -341,13 +349,13 @@ select option {
 		}
 		function updateDisplay(){
 			if(format == "MLA"){
-				document.getElementById("savedcitations").innerHTML = generateMLA();
+				$("#savedcitations").html(generateMLA());
 			}else if(format == "APA"){
-				document.getElementById("savedcitations").innerHTML = generateAPA();
+				$("#savedcitations").html(generateAPA());
 			}else if(format == "ChicagoA"){
-				document.getElementById("savedcitations").innerHTML = generateChicago();
+				$("#savedcitations").html(generateChicago());
 			}
-			document.getElementById("citations").style.display = "initial";
+			$("#citations").show();
 		}
 		function updateFormat(_format){
 			format = _format;
@@ -369,8 +377,8 @@ select option {
 					day = minz(item.publishedDate.substring(8,10));
 				}
 			}
-			document.getElementById('searchresults').innerHTML = "";
-    		document.getElementById("searchdiv").style.display = "none";
+			$('#searchresults').html("");
+    		$("#searchdiv").hide();
 
 
     		var request = createCORSRequest("get", "https://openlibrary.org/api/books?bibkeys=ISBN:" + item.industryIdentifiers[0].identifier + "&format=json&jscmd=data");
@@ -504,6 +512,7 @@ select option {
 		}
 		function clearCitations(){
 			citations = [];
+			document.cookie = "saved=;"
 			updateDisplay();
 		}
 		/*
@@ -585,68 +594,5 @@ select option {
 			return alphabeautify(newversion);
 		}
 	</script>
-</head>
-<body>
-	<h1>RefCite Citation Generator</h1>
-	<h2>Create a Citation:</h2>
-	<form name="search" onsubmit="return cite()">
-		<input type="text" name="bigbox" id="bigbox" placeholder="Enter DOI, Link, Title, etc...">
-		<input type="submit" value="Search">
-	</form>
-	<input type="submit" value="Manual Entry" onclick="displayGeneric('other','','','','','','','','','','','','','','','')">
-	<h2 id="dots"></h2>
-	<div id="searchdiv">
-		<hr align="left"/>
-		<div id="searchresults">
-			
-		</div>
-		<input type="submit" value="Cancel">
-	</div>
-	<div id="verifydiv">
-		Not all fields need to be filled out. Do the best you can! Citing sources is not a precise endeavor.
-		<form name="verify" onsubmit="return verifyCitationDialog()">
-			<br>
-			<b>Source Format: </b>
-			<select id="vsf">
-				<option value="journal-article">Journal Article</option>
-				<option value="book">Book</option>
-				<option value="website">Website</option>
-				<option value="other">Other</option>
-			</select>
-			<br>
-			Authors:
-			<div id="authdiv">
-				Author: <input type='text' id="vauth"><br>
-			</div>
-			<a class="but" href="javascript:changeAuthors(1)">Add Author</a>
-			<a class="but" href="javascript:changeAuthors(0)">Remove Author</a>
-			<br>
-			<br>
-			Title: <input type="text" id="vtitl" placeholder="------"><br><br>
-			Date Published:<br>
-			Year: <input type="text" class="date" id="vyear" placeholder="2019"> Month: <input type="text" class="date" id="vmont" placeholder="1"> Day: <input type="text" class="date" id="vday" placeholder="1"><br><br>
-			Journal Name (academic papers only): <input type="text" id="vjnam" placeholder="------"><br>
-			URL: <input type=text id="vurl" placeholder="https://------.org"><br>
-			Publisher: <input type="text" id="vpubl" placeholder="------"> Publisher Location: <input type="text" id="vpubloc" placeholder="New York, NY"><br><br>
-			Volume: <input type="text" id="vvol" class="date" placeholder="1"> Issue: <input type="text" id="viss" class="date" placeholder="1"><br>
-			Pages: <input type="text" id="vpag" placeholder="e.g. 121-134"><br>
-			<br>
-			Date Last Updated (only used for websites):<br>
-			Year: <input type="text" class="date" id="vuyear" placeholder="2019"> Month: <input type="text" class="date" id="vumont" placeholder="1"> Day: <input type="text" class="date" id="vuday" placeholder="1"><br>
-			<input type="submit" value="Approve Citation">
-		</form>
-	</div>
-	<hr align="left"/>
-	<div id="citations">
-		<input type="submit" value="MLA" name="MLA" onclick="updateFormat('MLA')">
-		<input type="submit" value="APA" name="APA" onclick="updateFormat('APA')">
-		<input type="submit" value="Chicago" name="ChicagoA" onclick="updateFormat('Chicago')">
-		<h2>Your Citations:</h2>
-		<div id="savedcitations">
-			
-		</div>
-		<br>
-		<input type="submit" value="Clear Citations" onclick="clearCitations()">
-	</div>
 </body>
 </html>
